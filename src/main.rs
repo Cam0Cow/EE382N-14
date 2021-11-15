@@ -1,3 +1,8 @@
+pub mod multiplier;
+
+use multiplier::Multiplier;
+
 fn main() {
-    println!("Hello, world!");
+    let mult = Multiplier::new(10);
+    println!("Product height is currently {}", mult.get_height());
 }
