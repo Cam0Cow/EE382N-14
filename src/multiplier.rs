@@ -28,7 +28,8 @@ impl Multiplier {
     pub fn wallace_reduce(&mut self) {
         if self.get_height() < 3 {return;} // If less than 3 lines then we're done!
 
-        for (i, &mut bits) in self.data.iter_mut().rev().enumerate() {
+        for i in 0..self.data.len() {
+            let bits = self.data[i];
             let count = bits / 3; // How many groups of 3 do we have?
             let remainder = bits % 3; // How large is the leftover group?
             let mut sum_total : u32 = 0; // New number of bits after the reduction
