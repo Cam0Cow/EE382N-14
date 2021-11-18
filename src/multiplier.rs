@@ -25,6 +25,19 @@ impl Multiplier {
         self.data.iter().fold(0u32, |a,&b| if a > b {a} else {b})
     }
 
+    // Get the next height a dadda reduction should reduce to
+    pub fn get_nearest_dadda_height(n: u32) -> u32 {
+        let mut a : u32 = 3; // Dadda height
+        let mut b : u32 = 2; // previous dadda height
+
+        while a < n {
+            b = a; // keep the previous value of a
+            a = (a * 3) / 2; // Find the next dadda height
+        }
+
+        b // The return the largest value still less than n
+    }
+
     pub fn wallace_reduce(&mut self) {
         if self.get_height() < 3 {return;} // If less than 3 lines then we're done!
 
