@@ -28,7 +28,7 @@ impl Multiplier {
     pub fn wallace_reduce(&mut self) {
         if self.get_height() < 3 {return;} // If less than 3 lines then we're done!
 
-        for i in 0..self.data.len() {
+        for i in (0..self.data.len()).rev() {
             let bits = self.data[i];
             let count = bits / 3; // How many groups of 3 do we have?
             let remainder = bits % 3; // How large is the leftover group?
@@ -40,19 +40,31 @@ impl Multiplier {
             sum_carry += count; // Each group of 3 yields 1 carry
 
             /*
-            If we have a group of 0 or 1, they just get propogated down
+            If we have an extra group of 0 or 1, they just get propogated down
             A group of two will go through a half adder
             */
             match remainder {
                 0 | 1 => sum_total += remainder,
-                2 => {self.half_adders += 1; sum_total += 1},
+                2 => {
+                    self.half_adders += 1;
+                    sum_total += 1;
+                    sum_carry += 1; // A half adder has a carry
+                },
                 _ => unreachable!()
             }
 
             self.data[i] = sum_total; // Set new number of bits
             if i+1 < self.data.len() {
                 self.data[i+1] += sum_carry;
+            } else if sum_carry > 0{
+                self.data.push(sum_carry);
             }
+        }
+    }
+
+    pub fn wallace_multiply(&mut self) {
+        while self.get_height() > 2 {
+            self.wallace_reduce();
         }
     }
 }
