@@ -41,16 +41,37 @@ impl Multiplier {
     pub fn dadda_reduce(&self) -> Multiplier {
         let mut data : Vec<u32> = vec![0; self.data.len()];
         let new_height = Multiplier::get_nearest_dadda_height(self.get_height());
+        let mut half_adders: u64 = 0; // half adders for this reduction only
+        let mut full_adders: u64 = 0; // full adders for this reduction only
+
         for (i, &elem) in self.data.iter().enumerate() {
+            println!("elem is {}, data[{}] is {}, available space is {}", elem, i, data[i], new_height - data[i]);
             if elem <= new_height - data[i] {
-                data[i] = elem;
+                data[i] += elem; // copy down elements without reduction if possbile
             } else {
-                data[i] = new_height;
+                let diff = elem + data[i] - new_height;
+                data[i] = new_height; // The column will be full
+                println!("\tDiff in spaces is {}", diff);
+
+                if diff % 2 == 1 { // If the difference is an odd number, we need a half adder
+                    half_adders += 1;
+                    data[i+1] += 1; // include carry into next column
+                    println!("\tAdded half adder");
+                }
+
+                let fulls = diff / 2; // number of full adders needed for this column
+                data[i+1] += fulls;
+                full_adders += fulls as u64;
+                println!("\tAdded {} full adders", fulls);
             }
         }
 
 
-        Multiplier {data: data, half_adders: 0, full_adders: 0}
+        Multiplier {
+            data: data,
+            half_adders: self.half_adders + half_adders,
+            full_adders: self.full_adders + full_adders
+        }
     }
 
 }
