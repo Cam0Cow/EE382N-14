@@ -38,7 +38,25 @@ impl Multiplier {
         b // The return the largest value still less than n
     }
 
-    pub fn wallace_reduce(&mut self) {
+    pub fn dadda_reduce(&self) -> Multiplier {
+        let mut data : Vec<u32> = vec![0; self.data.len()];
+        let new_height = Multiplier::get_nearest_dadda_height(self.get_height());
+        for (i, &elem) in self.data.iter().enumerate() {
+            if elem <= new_height - data[i] {
+                data[i] = elem;
+            } else {
+                data[i] = new_height;
+            }
+        }
+
+
+        Multiplier {data: data, half_adders: 0, full_adders: 0}
+    }
+
+}
+
+/*
+pub fn wallace_reduce(&mut self) {
         if self.get_height() < 3 {return;} // If less than 3 lines then we're done!
 
         for i in (0..self.data.len()).rev() {
@@ -80,4 +98,4 @@ impl Multiplier {
             self.wallace_reduce();
         }
     }
-}
+*/
